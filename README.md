@@ -14,6 +14,12 @@ npm install
 npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
 ```
 
+```bash
+npx ts-node src/index.ts --interactive
+```
+
+- `--interactive`: Run the interactive CLI mode (will ignore all other CLI
+  arguments)
 - `--room`: The size of the room in the format `width height`
 - `--start`: The starting position of the robot in the format `x y direction`
 - `--commands`: The commands to execute in the format `RFRFFRFRF` - where `R` is
