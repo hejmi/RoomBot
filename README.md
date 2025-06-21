@@ -11,11 +11,15 @@ npm install
 ## Usage
 
 ```bash
+# non-interactive mode with arguments
 npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
 ```
 
 ```bash
+# interactive mode
 npx ts-node src/index.ts --interactive
+# or
+npm start
 ```
 
 #### Arguments
