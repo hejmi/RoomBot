@@ -4,13 +4,14 @@ import { InputArgs } from './types'
 import { CliArgs, parseArgs } from './utils/cliParser'
 import { InputValidator } from './utils/InputValidator'
 import { Logger } from './utils/logger'
+import { drawPosition } from './utils/drawPosition'
 
 /*
  * Runs the robot with the given input arguments.
  * Uses the InputValidator to validate the input.
  * @param inputArgs - The input arguments to run the robot with.
  */
-async function runRobot(inputArgs: InputArgs) {
+async function runRobot(inputArgs: InputArgs, graphics: boolean = false) {
 	try {
 		const [roomW, roomH] = InputValidator.validateRoomSize(inputArgs.room.trim())
 		const startPos = InputValidator.validateStartPosition(
@@ -19,12 +20,27 @@ async function runRobot(inputArgs: InputArgs) {
 		)
 		const commands = InputValidator.validateCommands(inputArgs.commands.trim())
 
-		Logger.logStart(roomW, roomH, startPos, commands)
+		if (graphics && (roomW > 11 || roomH > 11)) {
+			Logger.logInfo(
+				'Graphical mode is not supported for rooms larger than 11x11. Graphical mode disabled.'
+			)
+			graphics = false
+		}
+
+		if (graphics) {
+			drawPosition(roomW, roomH, startPos.x, startPos.y, startPos.direction, true)
+		} else {
+			Logger.logStart(roomW, roomH, startPos, commands)
+		}
 
 		const robot = new Robot(roomW, roomH, startPos)
 		const finalPos = robot.executeCommands(commands.trim())
 
-		Logger.logReport(finalPos)
+		if (graphics) {
+			drawPosition(roomW, roomH, finalPos.x, finalPos.y, finalPos.direction)
+		} else {
+			Logger.logReport(finalPos)
+		}
 	} catch (error) {
 		Logger.logError(error as Error)
 		process.exit(1)
@@ -59,15 +75,16 @@ async function main() {
 
 		rl.close()
 		inputArgs = { room: roomInput, start: startInput, commands: commandsInput }
-		runRobot(inputArgs)
+		runRobot(inputArgs, args.graphical)
 	} else {
 		if (!args.room || !args.start || !args.commands) {
-			throw new Error(
-				'Missing required CLI arguments: --room, --start, --commands'
+			Logger.logError(
+				new Error('Missing required CLI arguments: --room, --start, --commands')
 			)
+			process.exit(1)
 		}
 		inputArgs = { room: args.room, start: args.start, commands: args.commands }
-		runRobot(inputArgs)
+		runRobot(inputArgs, args.graphical)
 	}
 }
 

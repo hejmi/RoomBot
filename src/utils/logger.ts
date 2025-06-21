@@ -20,4 +20,8 @@ export class Logger {
 	static logError = (error: Error) => {
 		console.error('Error:', error.message)
 	}
+
+	static logInfo = (message: string) => {
+		console.log(`\nINFO: ${message}\n`)
+	}
 }

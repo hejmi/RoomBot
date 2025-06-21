@@ -22,6 +22,13 @@ npx ts-node src/index.ts --interactive
 npm start
 ```
 
+```bash
+# graphical mode
+npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
+# or
+npx ts-node src/index.ts --interactive --graphical
+```
+
 #### Arguments
 
 - `--interactive`: Run the interactive CLI mode (will ignore all other CLI
@@ -31,6 +38,8 @@ npm start
 - `--commands`: The commands to execute in the format `RFRFFRFRF` - where `R` is
   the turn right command, `L` is the turn left command and `F` is the move
   forward command.
+- `--graphical`: Run the robot in graphical mode - works in both interactive and
+  non-interactive modes.
 
 #### Directions
 
@@ -79,6 +88,36 @@ Room Size: 5 5
 Start Position: 1 2 N
 Commands: RFRFFRFRF
 Report: 1 3 N
+```
+
+## Graphical Mode
+
+Will output the robot's start and result position on the console in a more
+visual way.
+
+```
+npx ts-node src/index.ts --room "5 5" --start "1 1 N" --commands "RFFRFFLF" --graphical
+```
+
+```
+Robot starting position:
+
+    0 1 2 3 4
+ 0 | | | | | |
+ 1 | |▲| | | |
+ 2 | | | | | |
+ 3 | | | | | |
+ 4 | | | | | |
+
+
+Robot result position:
+
+    0 1 2 3 4
+ 0 | | | | | |
+ 1 | | | | | |
+ 2 | | | | | |
+ 3 | | | | |▶︎|
+ 4 | | | | | |
 ```
 
 ## Unit Tests

@@ -3,6 +3,7 @@ export interface CliArgs {
 	start?: string
 	commands?: string
 	interactive?: boolean
+	graphical?: boolean
 }
 
 export function parseArgs(args: string[]): CliArgs {
@@ -20,6 +21,9 @@ export function parseArgs(args: string[]): CliArgs {
 				break
 			case '--interactive':
 				cliArgs.interactive = true
+				break
+			case '--graphical':
+				cliArgs.graphical = true
 				break
 		}
 	})
