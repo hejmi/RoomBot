@@ -1,33 +1,43 @@
-import { Robot } from './models/Robot'
-import { Direction, Position } from './types'
 import readline from 'readline'
+import { Robot } from './models/Robot'
+import { InputArgs } from './types'
 import { CliArgs, parseArgs } from './utils/cliParser'
+import { InputValidator } from './utils/InputValidator'
+import { Logger } from './utils/logger'
 
-// create the room
-function parseRoom(roomStr: string): [number, number] {
-	const [w, h] = roomStr.split(' ').map(Number)
-	if (!Number.isInteger(w) || !Number.isInteger(h)) {
-		throw new Error('Invalid room size')
+/*
+ * Runs the robot with the given input arguments.
+ * Uses the InputValidator to validate the input.
+ * @param inputArgs - The input arguments to run the robot with.
+ */
+async function runRobot(inputArgs: InputArgs) {
+	try {
+		const [roomW, roomH] = InputValidator.validateRoomSize(inputArgs.room.trim())
+		const startPos = InputValidator.validateStartPosition(
+			inputArgs.start.trim(),
+			[roomW, roomH]
+		)
+		const commands = InputValidator.validateCommands(inputArgs.commands.trim())
+
+		Logger.logStart(roomW, roomH, startPos, commands)
+
+		const robot = new Robot(roomW, roomH, startPos)
+		const finalPos = robot.executeCommands(commands.trim())
+
+		Logger.logReport(finalPos)
+	} catch (error) {
+		Logger.logError(error as Error)
+		process.exit(1)
 	}
-	return [w, h]
 }
 
-// create the start position for robot
-function parseStart(startStr: string): Position {
-	const [xStr, yStr, dir] = startStr.split(' ')
-	const x = Number(xStr)
-	const y = Number(yStr)
-	if (!['N', 'E', 'S', 'W'].includes(dir)) {
-		throw new Error('Invalid start direction')
-	}
-	if (!Number.isInteger(x) || !Number.isInteger(y)) {
-		throw new Error('Invalid start position coordinates')
-	}
-	return { x, y, direction: dir as Direction }
-}
-
+/*
+ * Main function that runs the robot.
+ * Handles both interactive and non-interactive modes.
+ */
 async function main() {
 	const args: CliArgs = parseArgs(process.argv.slice(2))
+	let inputArgs: InputArgs
 
 	// interactive cli mode
 	if (args.interactive) {
@@ -39,59 +49,25 @@ async function main() {
 		const question = (prompt: string) =>
 			new Promise<string>((resolve) => rl.question(prompt, resolve))
 
-		try {
-			const roomInput = await question('Enter room size (e.g., 5 5): ')
-			const startInput = await question(
-				'Enter robot start position (e.g., 1 2 N): '
-			)
-			const commandsInput = await question(
-				'Enter command string (e.g., RFRFFRFRF): '
-			)
-
-			rl.close()
-
-			const [roomW, roomH] = parseRoom(roomInput.trim())
-			const startPos = parseStart(startInput.trim())
-			console.log(`Room Size: ${roomW} ${roomH}`)
-			console.log(
-				`Start Position: ${startPos.x} ${startPos.y} ${startPos.direction}`
-			)
-			console.log(`Commands: ${commandsInput.trim()}`)
-
-			const robot = new Robot(roomW, roomH, startPos)
-			const finalPos = robot.executeCommands(commandsInput.trim())
-
-			console.log(`\nReport: ${finalPos.x} ${finalPos.y} ${finalPos.direction}`)
-		} catch (error) {
-			console.error('Error:', (error as Error).message)
-			process.exit(1)
-		}
-	} else {
-		// standard cli mode
-		try {
-			if (!args.room || !args.start || !args.commands) {
-				throw new Error(
-					'Missing required CLI arguments: --room, --start, --commands'
-				)
-			}
-		} catch (error) {
-			console.error('Error:', (error as Error).message)
-			process.exit(1)
-		}
-
-		const [roomW, roomH] = parseRoom(args.room.trim())
-		const startPos = parseStart(args.start.trim())
-
-		console.log(`Room Size: ${roomW} ${roomH}`)
-		console.log(
-			`Start Position: ${startPos.x} ${startPos.y} ${startPos.direction}`
+		const roomInput = await question('Enter room size (e.g., 5 5): ')
+		const startInput = await question(
+			'Enter robot start position (e.g., 1 2 N): '
 		)
-		console.log(`Commands: ${args.commands.trim()}`)
+		const commandsInput = await question(
+			'Enter command string (e.g., RFRFFRFRF): '
+		)
 
-		const robot = new Robot(roomW, roomH, startPos)
-		const finalPos = robot.executeCommands(args.commands.trim())
-
-		console.log(`\nReport: ${finalPos.x} ${finalPos.y} ${finalPos.direction}`)
+		rl.close()
+		inputArgs = { room: roomInput, start: startInput, commands: commandsInput }
+		runRobot(inputArgs)
+	} else {
+		if (!args.room || !args.start || !args.commands) {
+			throw new Error(
+				'Missing required CLI arguments: --room, --start, --commands'
+			)
+		}
+		inputArgs = { room: args.room, start: args.start, commands: args.commands }
+		runRobot(inputArgs)
 	}
 }
 

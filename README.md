@@ -49,7 +49,18 @@ of the following:
 The final position of the robot and the direction it is facing is printed to the
 console.
 
-#### Interactive Mode
+#### Example
+
+```bash
+npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
+Room Size: 5 5
+Start Position: 1 2 N
+Commands: RFRFFRFRF
+
+Report: 1 3 N
+```
+
+## Interactive Mode
 
 Will ask for the input of room size, start position and commands to execute.
 
@@ -63,17 +74,6 @@ Console will print the input arguments and the result of the robot's execution.
 Room Size: 5 5
 Start Position: 1 2 N
 Commands: RFRFFRFRF
-Report: 1 3 N
-```
-
-#### Example
-
-```bash
-npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
-Room Size: 5 5
-Start Position: 1 2 N
-Commands: RFRFFRFRF
-
 Report: 1 3 N
 ```
 

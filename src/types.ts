@@ -5,3 +5,9 @@ export interface Position {
 	y: number
 	direction: Direction
 }
+
+export interface InputArgs {
+	room: string
+	start: string
+	commands: string
+}
