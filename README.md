@@ -24,8 +24,8 @@ npm start
 
 ```bash
 # graphical mode
-npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF"
-# or
+npx ts-node src/index.ts --room "5 5" --start "1 2 N" --commands "RFRFFRFRF" --graphical
+# graphical mode with interactive mode
 npx ts-node src/index.ts --interactive --graphical
 ```
 
@@ -93,7 +93,7 @@ Report: 1 3 N
 ## Graphical Mode
 
 Will output the robot's start and result position on the console in a more
-visual way.
+visual way. Room limit is 11x11.
 
 ```
 npx ts-node src/index.ts --room "5 5" --start "1 1 N" --commands "RFFRFFLF" --graphical
